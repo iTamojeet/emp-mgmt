@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EMS{% endblock %} - Employee Management</title>
+    <style>
+        /* ── XP GLOBAL RESET & FONTS ── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
+            font-size: 11px;
+            background: #3a6ea5;  /* XP desktop blue */
+            background-image:
+                radial-gradient(ellipse at 20% 50%, #4a7fb5 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, #2a5a8a 0%, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── XP DESKTOP AREA ── */
+        .desktop {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ── XP WINDOW ── */
+        .window {
+            background: #ece9d8;  /* XP window background */
+            border: 1px solid #ffffff;
+            box-shadow:
+                inset 1px 1px 0 #ffffff,
+                2px 2px 8px rgba(0,0,0,0.5);
+            border-radius: 8px 8px 0 0;
+            min-width: 300px;
+        }
+
+        /* ── XP TITLE BAR ── */
+        .title-bar {
+            background: linear-gradient(180deg, #0f6fcd 0%, #3594e0 4%, #1e7fe8 6%, #1e7fe8 90%, #1464c8 100%);
+            padding: 4px 6px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .title-bar-text {
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .title-bar-icon { font-size: 14px; }
+
+        /* ── WINDOW CONTENT ── */
+        .window-content { padding: 16px; }
+
+        /* ── XP BUTTON ── */
+        .xp-btn {
+            background: linear-gradient(180deg, #f5f4f0 0%, #e0ddd3 45%, #ccc9bc 50%, #d8d5c8 100%);
+            border: 1px solid #7a7a7a;
+            border-top-color: #ffffff;
+            border-left-color: #ffffff;
+            box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8);
+            padding: 4px 14px;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 3px;
+            min-width: 75px;
+        }
+
+        .xp-btn:hover {
+            background: linear-gradient(180deg, #dff0ff 0%, #c8e4ff 50%, #b8d8ff 100%);
+            border-color: #3186d0;
+        }
+
+        .xp-btn:active {
+            background: linear-gradient(180deg, #ccc9bc 0%, #d8d5c8 100%);
+            border-top-color: #7a7a7a;
+            border-left-color: #7a7a7a;
+            border-bottom-color: #ffffff;
+            border-right-color: #ffffff;
+        }
+
+        .xp-btn-primary {
+            background: linear-gradient(180deg, #6fc8f0 0%, #2090d8 45%, #0070c0 50%, #1880d0 100%);
+            border-color: #003c82;
+            color: white;
+        }
+
+        .xp-btn-primary:hover {
+            background: linear-gradient(180deg, #80d8ff 0%, #30a0e8 50%, #1080d0 100%);
+        }
+
+        .xp-btn-danger {
+            background: linear-gradient(180deg, #ffaaaa 0%, #ee4444 50%, #cc0000 100%);
+            border-color: #880000;
+            color: white;
+        }
+
+        /* ── XP INPUT ── */
+        .xp-input {
+            border: 2px solid #7f9db9;
+            border-top-color: #5b7ea6;
+            border-left-color: #5b7ea6;
+            background: white;
+            padding: 3px 5px;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 11px;
+            width: 100%;
+            outline: none;
+        }
+
+        .xp-input:focus { border-color: #3169c8; }
+
+        /* ── XP SELECT ── */
+        .xp-select {
+            border: 2px solid #7f9db9;
+            border-top-color: #5b7ea6;
+            border-left-color: #5b7ea6;
+            background: white;
+            padding: 3px 5px;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 11px;
+            width: 100%;
+            outline: none;
+        }
+
+        /* ── XP TABLE ── */
+        .xp-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        .xp-table th {
+            background: linear-gradient(180deg, #e8e4d8, #d4d0c4);
+            border: 1px solid #aca899;
+            padding: 3px 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .xp-table td {
+            border: 1px solid #d4d0c4;
+            padding: 3px 8px;
+            background: white;
+        }
+
+        .xp-table tr:nth-child(even) td { background: #f0efe8; }
+        .xp-table tr:hover td { background: #c8e0ff; }
+
+        /* ── XP LABEL ── */
+        .xp-label {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        /* ── XP FIELD GROUP ── */
+        .field-group { margin-bottom: 12px; }
+
+        /* ── XP PANEL (sunken box) ── */
+        .xp-panel {
+            border: 2px solid #aca899;
+            border-top-color: #716f64;
+            border-left-color: #716f64;
+            background: #ffffff;
+            padding: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* ── XP SECTION HEADER ── */
+        .xp-section-title {
+            font-weight: bold;
+            font-size: 12px;
+            color: #003c82;
+            border-bottom: 1px solid #aca899;
+            padding-bottom: 4px;
+            margin-bottom: 10px;
+        }
+
+        /* ── ALERT BOXES ── */
+        .xp-alert {
+            padding: 6px 10px;
+            border: 1px solid;
+            margin-bottom: 10px;
+            font-size: 11px;
+        }
+        .xp-alert-error   { background: #ffeeee; border-color: #cc0000; color: #cc0000; }
+        .xp-alert-success { background: #eeffee; border-color: #008800; color: #008800; }
+        .xp-alert-info    { background: #eef5ff; border-color: #0055cc; color: #0055cc; }
+
+        /* ── XP TASKBAR ── */
+        .taskbar {
+            height: 30px;
+            background: linear-gradient(180deg, #1f5fac 0%, #3a7fd4 8%, #2a6ec4 50%, #1a5ab8 95%, #1050a0 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 4px;
+            gap: 4px;
+            border-top: 1px solid #0a3880;
+            position: sticky;
+            bottom: 0;
+        }
+
+        /* XP Start button */
+        .start-btn {
+            background: linear-gradient(180deg, #5aac2a 0%, #3c8c18 50%, #2a7010 100%);
+            border: 1px solid #1a5008;
+            border-radius: 0 10px 10px 0;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            padding: 2px 10px 2px 8px;
+            cursor: pointer;
+            font-family: 'Tahoma', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            height: 24px;
+        }
+
+        .taskbar-clock {
+            margin-left: auto;
+            background: rgba(0,0,60,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 2px 8px;
+            font-size: 11px;
+        }
+
+        .taskbar-user {
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            background: rgba(0,0,60,0.2);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        /* ── TOOLTIP ── */
+        .hidden { display: none; }
+
+        /* ── SCROLLBAR XP STYLE ── */
+        ::-webkit-scrollbar { width: 16px; }
+        ::-webkit-scrollbar-track { background: #d4d0c4; }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, #e8e4d8, #c4c0b4);
+            border: 1px solid #aca899;
+        }
+    </style>
+</head>
+<body>
+
+<div class="desktop">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- XP Taskbar -->
+<div class="taskbar">
+    <button class="start-btn">⊞ start</button>
+    <span class="taskbar-user" id="taskbar-user">Not logged in</span>
+    <span class="taskbar-clock" id="taskbar-clock">00:00</span>
+</div>
+
+<!-- Clock script — updates every second, very simple -->
+<script>
+    function updateClock() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('taskbar-clock').textContent = h + ':' + m;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // Show logged in user name in taskbar if token exists
+    const userName = localStorage.getItem('user_name');
+    if (userName) {
+        document.getElementById('taskbar-user').textContent = '👤 ' + userName;
+    }
+</script>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

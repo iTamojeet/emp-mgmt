@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="window" style="width: 360px;">
+
+    <!-- XP Title Bar -->
+    <div class="title-bar">
+        <div class="title-bar-text">
+            <span class="title-bar-icon">🏢</span>
+            Employee Management System - Login
+        </div>
+    </div>
+
+    <!-- Window Content -->
+    <div class="window-content">
+
+        <div style="text-align:center; margin-bottom: 16px;">
+            <div style="font-size: 40px;">🏢</div>
+            <div style="font-weight: bold; font-size: 13px; color: #003c82;">Employee Management System</div>
+            <div style="color: #666; margin-top: 2px;">Please log in to continue</div>
+        </div>
+
+        <!-- Error message box (hidden by default) -->
+        <div class="xp-alert xp-alert-error hidden" id="error-box">
+            ⚠️ <span id="error-msg">Invalid credentials</span>
+        </div>
+
+        <!-- Login Form -->
+        <div class="field-group">
+            <label class="xp-label">Email Address:</label>
+            <input class="xp-input" type="email" id="email" placeholder="alice@company.com" />
+        </div>
+
+        <div class="field-group">
+            <label class="xp-label">Password:</label>
+            <input class="xp-input" type="password" id="password" placeholder="••••••••" />
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 16px;">
+            <button class="xp-btn" onclick="clearForm()">Cancel</button>
+            <button class="xp-btn xp-btn-primary" onclick="doLogin()">Log In</button>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Clear form fields
+    function clearForm() {
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+    }
+
+    // Show error message
+    function showError(msg) {
+        const box = document.getElementById('error-box');
+        document.getElementById('error-msg').textContent = msg;
+        box.classList.remove('hidden');
+    }
+
+    // Login function — calls POST /auth/login
+    async function doLogin() {
+        const email    = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        if (!email || !password) {
+            showError('Please enter email and password.');
+            return;
+        }
+
+        // Call our API
+        const response = await fetch('/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            // Login failed — show error
+            showError(data.detail || 'Login failed.');
+            return;
+        }
+
+        // Save token, role, name in browser memory
+        localStorage.setItem('token', data.access_token);
+        localStorage.setItem('role',  data.role);
+        localStorage.setItem('user_name', data.name);
+
+        // Redirect based on role
+        if (data.role === 'manager') {
+            window.location.href = '/dashboard/manager';
+        } else {
+            window.location.href = '/dashboard/employee';
+        }
+    }
+
+    // Allow pressing Enter to login
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') doLogin();
+    });
+</script>
+{% endblock %}
