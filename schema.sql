@@ -61,3 +61,16 @@ CREATE TABLE performance (
     FOREIGN KEY (user_id)     REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- Reviews
+CREATE TABLE self_reviews (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    user_id     INT NOT NULL,
+    achievement TEXT NOT NULL,
+    challenges  TEXT,
+    workload    INT NOT NULL CHECK (workload BETWEEN 1 AND 5),
+    period      ENUM('weekly', 'monthly', 'quarterly') NOT NULL,
+    review_date DATE NOT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

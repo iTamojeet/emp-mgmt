@@ -4,7 +4,7 @@ A FastAPI-based Employee Management System with RBAC, MySQL, and Google Gemini A
 
 ## Tech Stack
 - **Backend:** Python 3.14, FastAPI, SQLAlchemy
-- **Database:** MySQL (Docker)
+- **Database:** MySQL 9.5 (Docker)
 - **Frontend:** Jinja2 HTML/CSS (Windows XP theme)
 - **Auth:** JWT (python-jose), bcrypt
 - **AI:** Google Gemini API

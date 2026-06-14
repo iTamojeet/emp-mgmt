@@ -72,3 +72,17 @@ class Performance(Base):
 
     user        = relationship("User", foreign_keys=[user_id], back_populates="performance")
     reviewer    = relationship("User", foreign_keys=[reviewed_by])
+
+class SelfReview(Base):
+    __tablename__ = "self_reviews"
+
+    id          = Column(Integer, primary_key=True, index=True)
+    user_id     = Column(Integer, ForeignKey("users.id"), nullable=False)
+    achievement = Column(Text, nullable=False)
+    challenges  = Column(Text, nullable=True)
+    workload    = Column(Integer, nullable=False)  # 1-5
+    period      = Column(Enum("weekly", "monthly", "quarterly"), nullable=False)
+    review_date = Column(Date, nullable=False)
+    created_at  = Column(TIMESTAMP, server_default=func.now())
+
+    user = relationship("User", foreign_keys=[user_id])

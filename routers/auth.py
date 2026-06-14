@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, Request
 from sqlalchemy.orm import Session
 from database import get_db
-from models import User
+from models import User, Department
 from schemas import LoginRequest, TokenResponse
 from services.auth_service import verify_password, create_access_token, decode_token
 
@@ -23,10 +23,8 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
 
     return TokenResponse(access_token=token, role=user.role, name=user.name)
 
-
 @router.get("/me")
 def get_me(request: Request, db: Session = Depends(get_db)):
-    # Read token from Authorization header
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -40,4 +38,23 @@ def get_me(request: Request, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    return {"id": user.id, "name": user.name, "role": user.role, "department_id": user.department_id}
+    # Get manager info via department
+    manager_name  = None
+    manager_email = None
+    if user.department_id:
+        dept = db.query(Department).filter(Department.id == user.department_id).first()
+        if dept and dept.manager_id:
+            manager = db.query(User).filter(User.id == dept.manager_id).first()
+            if manager:
+                manager_name  = manager.name
+                manager_email = manager.email
+
+    return {
+        "id":            user.id,
+        "name":          user.name,
+        "email":         user.email,
+        "role":          user.role,
+        "department_id": user.department_id,
+        "manager_name":  manager_name,
+        "manager_email": manager_email
+    }

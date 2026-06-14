@@ -1,285 +1,584 @@
-{% extends "base.html" %}
-{% block title %}Manager Dashboard{% endblock %}
+{% extends "base.html" %} {% block title %}Manager Dashboard{% endblock %} {%
+block content %}
+<div class="window" style="width: 900px; max-width: 98vw">
+  <!-- Title Bar -->
+  <div class="title-bar">
+    <div class="title-bar-text">
+      🏢 Employee Management System - Manager Dashboard
+    </div>
+  </div>
 
-{% block content %}
-<div class="window" style="width: 900px; max-width: 98vw;">
-
-    <!-- Title Bar -->
-    <div class="title-bar">
-        <div class="title-bar-text">
-            🏢 Employee Management System - Manager Dashboard
-        </div>
+  <div class="window-content">
+    <!-- Top bar: welcome + logout -->
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      "
+    >
+      <div>
+        <span style="font-weight: bold; font-size: 13px"
+          >Welcome, <span id="mgr-name">Manager</span></span
+        >
+        <span style="color: #666; margin-left: 8px"
+          >| Engineering Department</span
+        >
+      </div>
+      <button class="xp-btn xp-btn-danger" onclick="logout()">
+        🚪 Log Out
+      </button>
     </div>
 
-    <div class="window-content">
-
-        <!-- Top bar: welcome + logout -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div>
-                <span style="font-weight:bold; font-size:13px;">Welcome, <span id="mgr-name">Manager</span></span>
-                <span style="color:#666; margin-left:8px;">| Engineering Department</span>
-            </div>
-            <button class="xp-btn xp-btn-danger" onclick="logout()">🚪 Log Out</button>
-        </div>
-
-        <!-- Tab buttons — like XP tabs -->
-        <div style="display:flex; gap:2px; margin-bottom:-1px; position:relative; z-index:1;">
-            <button class="tab-btn active" onclick="showTab('tab-team')">👥 My Team</button>
-            <button class="tab-btn" onclick="showTab('tab-attendance')">📅 Attendance</button>
-            <button class="tab-btn" onclick="showTab('tab-tasks')">📋 Tasks</button>
-            <button class="tab-btn" onclick="showTab('tab-ai')">🤖 AI Insights</button>
-        </div>
-
-        <!-- Tab content wrapper -->
-        <div class="xp-panel" style="margin-bottom:0; min-height:300px;">
-
-            <!-- ── TAB 1: MY TEAM ── -->
-            <div id="tab-team" class="tab-content">
-                <div class="xp-section-title">👥 My Team Members</div>
-
-                <!-- Add Employee Form -->
-                <div style="margin-bottom:12px; padding:8px; background:#f5f4f0; border:1px solid #aca899;">
-                    <div style="font-weight:bold; margin-bottom:6px;">➕ Add New Employee</div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:6px; align-items:end;">
-                        <div>
-                            <label class="xp-label">Name:</label>
-                            <input class="xp-input" id="new-name" placeholder="Full name" />
-                        </div>
-                        <div>
-                            <label class="xp-label">Email:</label>
-                            <input class="xp-input" id="new-email" type="email" placeholder="email@company.com" />
-                        </div>
-                        <div>
-                            <label class="xp-label">Password:</label>
-                            <input class="xp-input" id="new-password" type="password" placeholder="••••••••" />
-                        </div>
-                        <button class="xp-btn xp-btn-primary" onclick="addEmployee()">Add</button>
-                    </div>
-                    <div class="xp-alert hidden" id="team-msg" style="margin-top:6px;"></div>
-                </div>
-
-                <!-- Team Table -->
-                <table class="xp-table" id="team-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="team-tbody">
-                        <tr><td colspan="4">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- ── TAB 2: ATTENDANCE ── -->
-            <div id="tab-attendance" class="tab-content hidden">
-                <div class="xp-section-title">📅 Team Attendance</div>
-
-                <!-- Mark Attendance -->
-                <div style="margin-bottom:12px; padding:8px; background:#f5f4f0; border:1px solid #aca899;">
-                    <div style="font-weight:bold; margin-bottom:6px;">✏️ Mark Attendance</div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:6px; align-items:end;">
-                        <div>
-                            <label class="xp-label">Employee:</label>
-                            <select class="xp-select" id="att-employee"></select>
-                        </div>
-                        <div>
-                            <label class="xp-label">Date:</label>
-                            <input class="xp-input" id="att-date" type="date" />
-                        </div>
-                        <div>
-                            <label class="xp-label">Status:</label>
-                            <select class="xp-select" id="att-status">
-                                <option value="present">Present</option>
-                                <option value="absent">Absent</option>
-                                <option value="half_day">Half Day</option>
-                                <option value="leave">Leave</option>
-                            </select>
-                        </div>
-                        <button class="xp-btn xp-btn-primary" onclick="markAttendance()">Mark</button>
-                    </div>
-                    <div class="xp-alert hidden" id="att-msg" style="margin-top:6px;"></div>
-                </div>
-
-                <!-- Attendance Table -->
-                <table class="xp-table">
-                    <thead>
-                        <tr><th>Employee ID</th><th>Date</th><th>Status</th></tr>
-                    </thead>
-                    <tbody id="att-tbody">
-                        <tr><td colspan="3">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- ── TAB 3: TASKS ── -->
-            <div id="tab-tasks" class="tab-content hidden">
-                <div class="xp-section-title">📋 Team Tasks</div>
-
-                <!-- Assign Task -->
-                <div style="margin-bottom:12px; padding:8px; background:#f5f4f0; border:1px solid #aca899;">
-                    <div style="font-weight:bold; margin-bottom:6px;">➕ Assign New Task</div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:6px; align-items:end;">
-                        <div>
-                            <label class="xp-label">Title:</label>
-                            <input class="xp-input" id="task-title" placeholder="Task title" />
-                        </div>
-                        <div>
-                            <label class="xp-label">Assign To:</label>
-                            <select class="xp-select" id="task-employee"></select>
-                        </div>
-                        <div>
-                            <label class="xp-label">Due Date:</label>
-                            <input class="xp-input" id="task-due" type="date" />
-                        </div>
-                        <button class="xp-btn xp-btn-primary" onclick="assignTask()">Assign</button>
-                    </div>
-                    <div style="margin-top:6px;">
-                        <label class="xp-label">Description (optional):</label>
-                        <input class="xp-input" id="task-desc" placeholder="Task description..." />
-                    </div>
-                    <div class="xp-alert hidden" id="task-msg" style="margin-top:6px;"></div>
-                </div>
-
-                <!-- Tasks Table -->
-                <table class="xp-table">
-                    <thead>
-                        <tr><th>Title</th><th>Assigned To</th><th>Status</th><th>Due Date</th><th>Action</th></tr>
-                    </thead>
-                    <tbody id="task-tbody">
-                        <tr><td colspan="5">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- ── TAB 4: AI INSIGHTS ── -->
-            <div id="tab-ai" class="tab-content hidden">
-                <div class="xp-section-title">🤖 AI-Powered Team Insights (Gemini)</div>
-
-                <div style="margin-bottom:12px; padding:8px; background:#f5f4f0; border:1px solid #aca899;">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <label class="xp-label" style="margin:0;">Select Period:</label>
-                        <select class="xp-select" id="ai-period" style="width:auto;">
-                            <option value="weekly">Last Week</option>
-                            <option value="monthly">Last Month</option>
-                            <option value="quarterly">Last Quarter</option>
-                        </select>
-                        <button class="xp-btn xp-btn-primary" onclick="getInsights()">🔍 Generate Insights</button>
-                    </div>
-                </div>
-
-                <!-- Loading indicator -->
-                <div id="ai-loading" class="hidden" style="text-align:center; padding:20px; color:#003c82;">
-                    ⏳ Gemini is analyzing your team data...
-                </div>
-
-                <!-- AI Result box -->
-                <div id="ai-result" class="hidden">
-                    <div class="xp-panel" style="white-space:pre-wrap; line-height:1.6; font-size:11px;" id="ai-text"></div>
-                </div>
-            </div>
-
-        </div><!-- end tab wrapper -->
-    </div><!-- end window-content -->
-</div>
-{% endblock %}
-
-{% block scripts %}
-<style>
-    /* XP-style tab buttons */
-    .tab-btn {
-        background: linear-gradient(180deg, #e8e4d8, #d4d0c4);
-        border: 1px solid #aca899;
-        border-bottom: none;
-        padding: 4px 12px;
-        font-family: 'Tahoma', sans-serif;
-        font-size: 11px;
-        cursor: pointer;
-        border-radius: 3px 3px 0 0;
-    }
-    .tab-btn.active {
-        background: #ffffff;
-        border-color: #aca899;
-        border-bottom: 1px solid #ffffff;
-        font-weight: bold;
+    <!-- Tab buttons — like XP tabs -->
+    <div
+      style="
+        display: flex;
+        gap: 2px;
+        margin-bottom: -1px;
         position: relative;
-        top: 1px;
-    }
-    .tab-btn:hover:not(.active) { background: #ddeeff; }
+        z-index: 1;
+      "
+    >
+      <button class="tab-btn active" onclick="showTab('tab-team')">
+        👥 My Team
+      </button>
+      <button class="tab-btn" onclick="showTab('tab-attendance')">
+        📅 Attendance
+      </button>
+      <button class="tab-btn" onclick="showTab('tab-tasks')">📋 Tasks</button>
+      <button class="tab-btn" onclick="showTab('tab-ai')">
+        🤖 AI Insights
+      </button>
+      <button class="tab-btn" onclick="showTab('tab-performance')">
+        ⭐ Performance
+      </button>
+      <button class="tab-btn" onclick="showTab('tab-attrition')">
+        ⚠️ Attrition Risk
+      </button>
+    </div>
+
+    <!-- Tab content wrapper -->
+    <div class="xp-panel" style="margin-bottom: 0; min-height: 300px">
+      <!-- ── TAB 1: MY TEAM ── -->
+      <div id="tab-team" class="tab-content">
+        <div class="xp-section-title">👥 My Team Members</div>
+
+        <!-- Add Employee Form -->
+        <div
+          style="
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f5f4f0;
+            border: 1px solid #aca899;
+          "
+        >
+          <div style="font-weight: bold; margin-bottom: 6px">
+            ➕ Add New Employee
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr 1fr auto;
+              gap: 6px;
+              align-items: end;
+            "
+          >
+            <div>
+              <label class="xp-label">Name:</label>
+              <input class="xp-input" id="new-name" placeholder="Full name" />
+            </div>
+            <div>
+              <label class="xp-label">Email:</label>
+              <input
+                class="xp-input"
+                id="new-email"
+                type="email"
+                placeholder="email@company.com"
+              />
+            </div>
+            <div>
+              <label class="xp-label">Password:</label>
+              <input
+                class="xp-input"
+                id="new-password"
+                type="password"
+                placeholder="••••••••"
+              />
+            </div>
+            <button class="xp-btn xp-btn-primary" onclick="addEmployee()">
+              Add
+            </button>
+          </div>
+          <div
+            class="xp-alert hidden"
+            id="team-msg"
+            style="margin-top: 6px"
+          ></div>
+        </div>
+
+        <!-- Team Table -->
+        <table class="xp-table" id="team-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="team-tbody">
+            <tr>
+              <td colspan="4">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── TAB 2: ATTENDANCE ── -->
+      <div id="tab-attendance" class="tab-content hidden">
+        <div class="xp-section-title">📅 Team Attendance</div>
+
+        <!-- Mark Attendance -->
+        <div
+          style="
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f5f4f0;
+            border: 1px solid #aca899;
+          "
+        >
+          <div style="font-weight: bold; margin-bottom: 6px">
+            ✏️ Mark Attendance
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr 1fr auto;
+              gap: 6px;
+              align-items: end;
+            "
+          >
+            <div>
+              <label class="xp-label">Employee:</label>
+              <select class="xp-select" id="att-employee"></select>
+            </div>
+            <div>
+              <label class="xp-label">Date:</label>
+              <input class="xp-input" id="att-date" type="date" />
+            </div>
+            <div>
+              <label class="xp-label">Status:</label>
+              <select class="xp-select" id="att-status">
+                <option value="present">Present</option>
+                <option value="absent">Absent</option>
+                <option value="half_day">Half Day</option>
+                <option value="leave">Leave</option>
+              </select>
+            </div>
+            <button class="xp-btn xp-btn-primary" onclick="markAttendance()">
+              Mark
+            </button>
+          </div>
+          <div
+            class="xp-alert hidden"
+            id="att-msg"
+            style="margin-top: 6px"
+          ></div>
+        </div>
+
+        <!-- Attendance Table -->
+        <table class="xp-table">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="att-tbody">
+            <tr>
+              <td colspan="3">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── TAB 3: TASKS ── -->
+      <div id="tab-tasks" class="tab-content hidden">
+        <div class="xp-section-title">📋 Team Tasks</div>
+
+        <!-- Assign Task -->
+        <div
+          style="
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f5f4f0;
+            border: 1px solid #aca899;
+          "
+        >
+          <div style="font-weight: bold; margin-bottom: 6px">
+            ➕ Assign New Task
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr 1fr auto;
+              gap: 6px;
+              align-items: end;
+            "
+          >
+            <div>
+              <label class="xp-label">Title:</label>
+              <input
+                class="xp-input"
+                id="task-title"
+                placeholder="Task title"
+              />
+            </div>
+            <div>
+              <label class="xp-label">Assign To:</label>
+              <select class="xp-select" id="task-employee"></select>
+            </div>
+            <div>
+              <label class="xp-label">Due Date:</label>
+              <input class="xp-input" id="task-due" type="date" />
+            </div>
+            <button class="xp-btn xp-btn-primary" onclick="assignTask()">
+              Assign
+            </button>
+          </div>
+          <div style="margin-top: 6px">
+            <label class="xp-label">Description (optional):</label>
+            <input
+              class="xp-input"
+              id="task-desc"
+              placeholder="Task description..."
+            />
+          </div>
+          <div
+            class="xp-alert hidden"
+            id="task-msg"
+            style="margin-top: 6px"
+          ></div>
+        </div>
+
+        <!-- Tasks Table -->
+        <table class="xp-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Assigned To</th>
+              <th>Status</th>
+              <th>Due Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="task-tbody">
+            <tr>
+              <td colspan="5">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── TAB 4: AI INSIGHTS ── -->
+      <div id="tab-ai" class="tab-content hidden">
+        <div class="xp-section-title">🤖 AI-Powered Team Insights (Gemini)</div>
+
+        <div
+          style="
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f5f4f0;
+            border: 1px solid #aca899;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 8px">
+            <label class="xp-label" style="margin: 0">Select Period:</label>
+            <select class="xp-select" id="ai-period" style="width: auto">
+              <option value="weekly">Last Week</option>
+              <option value="monthly">Last Month</option>
+              <option value="quarterly">Last Quarter</option>
+            </select>
+            <button class="xp-btn xp-btn-primary" onclick="getInsights()">
+              🔍 Generate Insights
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading indicator -->
+        <div
+          id="ai-loading"
+          class="hidden"
+          style="text-align: center; padding: 20px; color: #003c82"
+        >
+          ⏳ Gemini is analyzing your team data...
+        </div>
+
+        <!-- AI Result box -->
+        <div id="ai-result" class="hidden">
+          <div
+            class="xp-panel"
+            style="white-space: pre-wrap; line-height: 1.6; font-size: 11px"
+            id="ai-text"
+          ></div>
+        </div>
+      </div>
+      <!-- ── TAB 5: PERFORMANCE ── -->
+      <div id="tab-performance" class="tab-content hidden">
+        <div class="xp-section-title">⭐ Performance Reviews</div>
+
+        <!-- Add Review Form -->
+        <div
+          style="
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f5f4f0;
+            border: 1px solid #aca899;
+          "
+        >
+          <div style="font-weight: bold; margin-bottom: 6px">
+            ➕ Add Performance Review
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr 1fr 1fr auto;
+              gap: 6px;
+              align-items: end;
+            "
+          >
+            <div>
+              <label class="xp-label">Employee:</label>
+              <select class="xp-select" id="perf-employee"></select>
+            </div>
+            <div>
+              <label class="xp-label">Score (1-10):</label>
+              <input
+                class="xp-input"
+                id="perf-score"
+                type="number"
+                min="1"
+                max="10"
+                placeholder="8.5"
+              />
+            </div>
+            <div>
+              <label class="xp-label">Period:</label>
+              <select class="xp-select" id="perf-period">
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+              </select>
+            </div>
+            <div>
+              <label class="xp-label">Review Date:</label>
+              <input class="xp-input" id="perf-date" type="date" />
+            </div>
+            <button class="xp-btn xp-btn-primary" onclick="addReview()">
+              Add
+            </button>
+          </div>
+          <div style="margin-top: 6px">
+            <label class="xp-label">Notes:</label>
+            <input
+              class="xp-input"
+              id="perf-notes"
+              placeholder="Performance notes..."
+            />
+          </div>
+          <div
+            class="xp-alert hidden"
+            id="perf-msg"
+            style="margin-top: 6px"
+          ></div>
+        </div>
+
+        <!-- Manager Reviews Table -->
+        <div class="xp-section-title" style="margin-top: 12px">
+          📋 Reviews Given
+        </div>
+        <table class="xp-table" style="margin-bottom: 16px">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Score</th>
+              <th>Period</th>
+              <th>Date</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="perf-tbody">
+            <tr>
+              <td colspan="5">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Employee Self Reviews -->
+        <div class="xp-section-title">📝 Employee Self Reviews</div>
+        <table class="xp-table">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Achievement</th>
+              <th>Challenges</th>
+              <th>Workload</th>
+              <th>Period</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="self-review-tbody">
+            <tr>
+              <td colspan="6">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── TAB 6: ATTRITION RISK ── -->
+      <div id="tab-attrition" class="tab-content hidden">
+        <div class="xp-section-title">⚠️ AI Attrition Risk Assessment</div>
+
+        <div
+          style="
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f5f4f0;
+            border: 1px solid #aca899;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 8px">
+            <span style="font-size: 11px"
+              >Analyzes last 30 days of attendance, tasks and performance using
+              Gemini AI.</span
+            >
+            <button class="xp-btn xp-btn-primary" onclick="getAttrition()">
+              🔍 Analyze Team
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="attrition-loading"
+          class="hidden"
+          style="text-align: center; padding: 20px; color: #003c82"
+        >
+          ⏳ Gemini is assessing attrition risk for each employee...
+        </div>
+
+        <div id="attrition-result"></div>
+      </div>
+    </div>
+    <!-- end tab wrapper -->
+  </div>
+  <!-- end window-content -->
+</div>
+{% endblock %} {% block scripts %}
+<style>
+  /* XP-style tab buttons */
+  .tab-btn {
+    background: linear-gradient(180deg, #e8e4d8, #d4d0c4);
+    border: 1px solid #aca899;
+    border-bottom: none;
+    padding: 4px 12px;
+    font-family: "Tahoma", sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 3px 3px 0 0;
+  }
+  .tab-btn.active {
+    background: #ffffff;
+    border-color: #aca899;
+    border-bottom: 1px solid #ffffff;
+    font-weight: bold;
+    position: relative;
+    top: 1px;
+  }
+  .tab-btn:hover:not(.active) {
+    background: #ddeeff;
+  }
 </style>
 
 <script>
-    // ── HELPERS ──
+  // ── HELPERS ──
 
-    // Get token from browser storage
-    function getToken() { return localStorage.getItem('token'); }
+  // Get token from browser storage
+  function getToken() {
+    return localStorage.getItem("token");
+  }
 
-    // Redirect to login if no token
-    function checkAuth() {
-        if (!getToken()) window.location.href = '/login';
+  // Redirect to login if no token
+  function checkAuth() {
+    if (!getToken()) window.location.href = "/login";
+  }
+
+  // Make authenticated API call
+  async function api(method, url, body = null) {
+    const opts = {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken(),
+      },
+    };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(url, opts);
+    return { ok: res.ok, data: await res.json() };
+  }
+
+  // Show a message in an alert box
+  function showMsg(id, msg, type = "info") {
+    const el = document.getElementById(id);
+    el.className = "xp-alert xp-alert-" + type;
+    el.textContent = msg;
+    el.classList.remove("hidden");
+    // Auto-hide after 4 seconds
+    setTimeout(() => el.classList.add("hidden"), 4000);
+  }
+
+  // Show/hide tabs
+  function showTab(tabId) {
+    // Hide all tab contents
+    document
+      .querySelectorAll(".tab-content")
+      .forEach((t) => t.classList.add("hidden"));
+    // Remove active from all tab buttons
+    document
+      .querySelectorAll(".tab-btn")
+      .forEach((b) => b.classList.remove("active"));
+    // Show selected tab
+    document.getElementById(tabId).classList.remove("hidden");
+    // Mark clicked button as active
+    event.target.classList.add("active");
+  }
+
+  // Logout — clear storage and go to login
+  function logout() {
+    localStorage.clear();
+    window.location.href = "/login";
+  }
+
+  // ── TEAM ──
+
+  let teamMembers = []; // store team globally for dropdowns
+
+  async function loadTeam() {
+    const { ok, data } = await api("GET", "/employees/");
+    if (!ok) return;
+    teamMembers = data;
+
+    // Fill team table
+    const tbody = document.getElementById("team-tbody");
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4">No employees yet.</td></tr>';
+      return;
     }
-
-    // Make authenticated API call
-    async function api(method, url, body = null) {
-        const opts = {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + getToken()
-            }
-        };
-        if (body) opts.body = JSON.stringify(body);
-        const res = await fetch(url, opts);
-        return { ok: res.ok, data: await res.json() };
-    }
-
-    // Show a message in an alert box
-    function showMsg(id, msg, type = 'info') {
-        const el = document.getElementById(id);
-        el.className = 'xp-alert xp-alert-' + type;
-        el.textContent = msg;
-        el.classList.remove('hidden');
-        // Auto-hide after 4 seconds
-        setTimeout(() => el.classList.add('hidden'), 4000);
-    }
-
-    // Show/hide tabs
-    function showTab(tabId) {
-        // Hide all tab contents
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-        // Remove active from all tab buttons
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        // Show selected tab
-        document.getElementById(tabId).classList.remove('hidden');
-        // Mark clicked button as active
-        event.target.classList.add('active');
-    }
-
-    // Logout — clear storage and go to login
-    function logout() {
-        localStorage.clear();
-        window.location.href = '/login';
-    }
-
-    // ── TEAM ──
-
-    let teamMembers = []; // store team globally for dropdowns
-
-    async function loadTeam() {
-        const { ok, data } = await api('GET', '/employees/');
-        if (!ok) return;
-        teamMembers = data;
-
-        // Fill team table
-        const tbody = document.getElementById('team-tbody');
-        if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4">No employees yet.</td></tr>';
-            return;
-        }
-        tbody.innerHTML = data.map(e => `
+    tbody.innerHTML = data
+      .map(
+        (e) => `
             <tr>
                 <td>${e.id}</td>
                 <td>${e.name}</td>
@@ -289,159 +588,395 @@
                         onclick="deleteEmployee(${e.id}, '${e.name}')">Remove</button>
                 </td>
             </tr>
-        `).join('');
+        `,
+      )
+      .join("");
 
-        // Fill employee dropdowns in attendance and tasks tabs
-        const options = data.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
-        document.getElementById('att-employee').innerHTML = options;
-        document.getElementById('task-employee').innerHTML = options;
+    // Fill employee dropdowns in attendance and tasks tabs
+    const options = data
+      .map((e) => `<option value="${e.id}">${e.name}</option>`)
+      .join("");
+    document.getElementById("att-employee").innerHTML = options;
+    document.getElementById("task-employee").innerHTML = options;
+    document.getElementById('perf-employee').innerHTML = options;
+  }
+
+  async function addEmployee() {
+    const name = document.getElementById("new-name").value.trim();
+    const email = document.getElementById("new-email").value.trim();
+    const password = document.getElementById("new-password").value.trim();
+
+    if (!name || !email || !password) {
+      showMsg("team-msg", "Please fill all fields.", "error");
+      return;
     }
 
-    async function addEmployee() {
-        const name     = document.getElementById('new-name').value.trim();
-        const email    = document.getElementById('new-email').value.trim();
-        const password = document.getElementById('new-password').value.trim();
-
-        if (!name || !email || !password) {
-            showMsg('team-msg', 'Please fill all fields.', 'error'); return;
-        }
-
-        const { ok, data } = await api('POST', '/employees/', { name, email, password });
-        if (!ok) { showMsg('team-msg', data.detail || 'Failed to add.', 'error'); return; }
-
-        showMsg('team-msg', `✅ ${data.name} added successfully!`, 'success');
-        // Clear fields
-        document.getElementById('new-name').value = '';
-        document.getElementById('new-email').value = '';
-        document.getElementById('new-password').value = '';
-        loadTeam(); // refresh table
+    const { ok, data } = await api("POST", "/employees/", {
+      name,
+      email,
+      password,
+    });
+    if (!ok) {
+      showMsg("team-msg", data.detail || "Failed to add.", "error");
+      return;
     }
 
-    async function deleteEmployee(id, name) {
-        if (!confirm(`Remove ${name} from your team?`)) return;
-        const { ok, data } = await api('DELETE', `/employees/${id}`);
-        if (!ok) { alert(data.detail || 'Failed.'); return; }
-        loadTeam(); // refresh table
+    showMsg("team-msg", `✅ ${data.name} added successfully!`, "success");
+    // Clear fields
+    document.getElementById("new-name").value = "";
+    document.getElementById("new-email").value = "";
+    document.getElementById("new-password").value = "";
+    loadTeam(); // refresh table
+  }
+
+  async function deleteEmployee(id, name) {
+    if (!confirm(`Remove ${name} from your team?`)) return;
+    const { ok, data } = await api("DELETE", `/employees/${id}`);
+    if (!ok) {
+      alert(data.detail || "Failed.");
+      return;
+    }
+    loadTeam(); // refresh table
+  }
+
+  // ── ATTENDANCE ──
+
+  async function loadAttendance() {
+    const { ok, data } = await api("GET", "/attendance/team");
+    if (!ok) return;
+
+    const tbody = document.getElementById("att-tbody");
+    if (data.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="3">No attendance records yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data
+      .map((a) => {
+        // Look up name from teamMembers array we already loaded
+        const emp = teamMembers.find((e) => e.id === a.user_id);
+        const name = emp ? emp.name : `ID:${a.user_id}`;
+        return `
+        <tr>
+            <td>${name}</td>
+            <td>${a.date}</td>
+            <td>${a.status}</td>
+        </tr>
+    `;
+      })
+      .join("");
+  }
+
+  async function markAttendance() {
+    const user_id = document.getElementById("att-employee").value;
+    const date = document.getElementById("att-date").value;
+    const status = document.getElementById("att-status").value;
+
+    if (!date) {
+      showMsg("att-msg", "Please select a date.", "error");
+      return;
     }
 
-    // ── ATTENDANCE ──
-
-    async function loadAttendance() {
-        const { ok, data } = await api('GET', '/attendance/team');
-        if (!ok) return;
-
-        const tbody = document.getElementById('att-tbody');
-        if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3">No attendance records yet.</td></tr>';
-            return;
-        }
-        tbody.innerHTML = data.map(a => `
-            <tr>
-                <td>${a.user_id}</td>
-                <td>${a.date}</td>
-                <td>${a.status}</td>
-            </tr>
-        `).join('');
+    const { ok, data } = await api("POST", "/attendance/", {
+      user_id: parseInt(user_id),
+      date,
+      status,
+    });
+    if (!ok) {
+      showMsg("att-msg", data.detail || "Failed.", "error");
+      return;
     }
 
-    async function markAttendance() {
-        const user_id = document.getElementById('att-employee').value;
-        const date    = document.getElementById('att-date').value;
-        const status  = document.getElementById('att-status').value;
-
-        if (!date) { showMsg('att-msg', 'Please select a date.', 'error'); return; }
-
-        const { ok, data } = await api('POST', '/attendance/', {
-            user_id: parseInt(user_id), date, status
-        });
-        if (!ok) { showMsg('att-msg', data.detail || 'Failed.', 'error'); return; }
-
-        showMsg('att-msg', '✅ Attendance marked!', 'success');
-        loadAttendance();
-    }
-
-    // ── TASKS ──
-
-    async function loadTasks() {
-        const { ok, data } = await api('GET', '/tasks/team');
-        if (!ok) return;
-
-        const tbody = document.getElementById('task-tbody');
-        if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5">No tasks yet.</td></tr>';
-            return;
-        }
-        tbody.innerHTML = data.map(t => `
-            <tr>
-                <td>${t.title}</td>
-                <td>${t.assigned_to}</td>
-                <td>${t.status}</td>
-                <td>${t.due_date || '-'}</td>
-                <td>
-                    <button class="xp-btn xp-btn-danger"
-                        onclick="deleteTask(${t.id})">Delete</button>
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    async function assignTask() {
-        const title       = document.getElementById('task-title').value.trim();
-        const assigned_to = document.getElementById('task-employee').value;
-        const due_date    = document.getElementById('task-due').value || null;
-        const description = document.getElementById('task-desc').value.trim() || null;
-
-        if (!title) { showMsg('task-msg', 'Please enter a task title.', 'error'); return; }
-
-        const { ok, data } = await api('POST', '/tasks/', {
-            title, assigned_to: parseInt(assigned_to), due_date, description
-        });
-        if (!ok) { showMsg('task-msg', data.detail || 'Failed.', 'error'); return; }
-
-        showMsg('task-msg', '✅ Task assigned!', 'success');
-        document.getElementById('task-title').value = '';
-        document.getElementById('task-desc').value = '';
-        loadTasks();
-    }
-
-    async function deleteTask(id) {
-        if (!confirm('Delete this task?')) return;
-        const { ok, data } = await api('DELETE', `/tasks/${id}`);
-        if (!ok) { alert(data.detail || 'Failed.'); return; }
-        loadTasks();
-    }
-
-    // ── AI INSIGHTS ──
-
-    async function getInsights() {
-        const period = document.getElementById('ai-period').value;
-
-        // Show loading, hide result
-        document.getElementById('ai-loading').classList.remove('hidden');
-        document.getElementById('ai-result').classList.add('hidden');
-
-        const { ok, data } = await api('POST', '/insights/ai', { period });
-
-        document.getElementById('ai-loading').classList.add('hidden');
-
-        if (!ok) { alert('Failed to get insights.'); return; }
-
-        // Show result
-        document.getElementById('ai-text').textContent = data.ai_insights;
-        document.getElementById('ai-result').classList.remove('hidden');
-    }
-
-    // ── ON PAGE LOAD ──
-    checkAuth(); // redirect to login if not logged in
-    document.getElementById('mgr-name').textContent = localStorage.getItem('user_name') || 'Manager';
-
-    // Set today's date as default in date fields
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('att-date').value = today;
-
-    // Load all data
-    loadTeam();
+    showMsg("att-msg", "✅ Attendance marked!", "success");
     loadAttendance();
+  }
+
+  // ── TASKS ──
+
+  async function loadTasks() {
+    const { ok, data } = await api("GET", "/tasks/team");
+    if (!ok) return;
+
+    const tbody = document.getElementById("task-tbody");
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5">No tasks yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data
+      .map((t) => {
+        const emp = teamMembers.find((e) => e.id === t.assigned_to);
+        const name = emp ? emp.name : `ID:${t.assigned_to}`;
+        return `
+        <tr>
+            <td>${t.title}</td>
+            <td>${name}</td>
+            <td>${t.status}</td>
+            <td>${t.due_date || "-"}</td>
+            <td>
+                <button class="xp-btn xp-btn-danger"
+                    onclick="deleteTask(${t.id})">Delete</button>
+            </td>
+        </tr>
+    `;
+      })
+      .join("");
+  }
+
+  async function assignTask() {
+    const title = document.getElementById("task-title").value.trim();
+    const assigned_to = document.getElementById("task-employee").value;
+    const due_date = document.getElementById("task-due").value || null;
+    const description =
+      document.getElementById("task-desc").value.trim() || null;
+
+    if (!title) {
+      showMsg("task-msg", "Please enter a task title.", "error");
+      return;
+    }
+
+    const { ok, data } = await api("POST", "/tasks/", {
+      title,
+      assigned_to: parseInt(assigned_to),
+      due_date,
+      description,
+    });
+    if (!ok) {
+      showMsg("task-msg", data.detail || "Failed.", "error");
+      return;
+    }
+
+    showMsg("task-msg", "✅ Task assigned!", "success");
+    document.getElementById("task-title").value = "";
+    document.getElementById("task-desc").value = "";
     loadTasks();
+  }
+
+  async function deleteTask(id) {
+    if (!confirm("Delete this task?")) return;
+    const { ok, data } = await api("DELETE", `/tasks/${id}`);
+    if (!ok) {
+      alert(data.detail || "Failed.");
+      return;
+    }
+    loadTasks();
+  }
+
+  // ── AI INSIGHTS ──
+
+  async function getInsights() {
+    const period = document.getElementById("ai-period").value;
+
+    // Show loading, hide result
+    document.getElementById("ai-loading").classList.remove("hidden");
+    document.getElementById("ai-result").classList.add("hidden");
+
+    const { ok, data } = await api("POST", "/insights/ai", { period });
+
+    document.getElementById("ai-loading").classList.add("hidden");
+
+    if (!ok) {
+      alert("Failed to get insights.");
+      return;
+    }
+
+    // Show result
+    // Convert markdown to readable HTML
+    const formatted = data.ai_insights
+      .replace(
+        /### (.*)/g,
+        '<strong style="font-size:12px;color:#003c82;">$1</strong><br>',
+      )
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\* /g, "&nbsp;&nbsp;• ")
+      .replace(/\n/g, "<br>");
+    document.getElementById("ai-text").innerHTML = formatted;
+    document.getElementById("ai-result").classList.remove("hidden");
+  }
+
+  // ── PERFORMANCE ──
+
+  async function loadPerformanceReviews() {
+    const { ok, data } = await api("GET", "/performance/team");
+    if (!ok) return;
+
+    const tbody = document.getElementById("perf-tbody");
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5">No reviews yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data
+      .map((r) => {
+        const emp = teamMembers.find((e) => e.id === r.user_id);
+        const name = emp ? emp.name : `ID:${r.user_id}`;
+        // Color score: green=high, orange=mid, red=low
+        const color =
+          r.score >= 7 ? "#008800" : r.score >= 5 ? "#cc8800" : "#cc0000";
+        return `
+                <tr>
+                    <td>${name}</td>
+                    <td style="color:${color}; font-weight:bold;">${r.score}/10</td>
+                    <td>${r.period}</td>
+                    <td>${r.review_date}</td>
+                    <td>${r.notes || "-"}</td>
+                </tr>
+            `;
+      })
+      .join("");
+  }
+
+  async function loadSelfReviews() {
+    const { ok, data } = await api("GET", "/performance/team/self-reviews");
+    if (!ok) return;
+
+    const tbody = document.getElementById("self-review-tbody");
+    if (data.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="6">No self reviews submitted yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data
+      .map((r) => {
+        const emp = teamMembers.find((e) => e.id === r.user_id);
+        const name = emp ? emp.name : `ID:${r.user_id}`;
+        // Workload bar: 1=low 5=high
+        const workloadColor =
+          r.workload >= 4 ? "#cc0000" : r.workload >= 3 ? "#cc8800" : "#008800";
+        return `
+                <tr>
+                    <td>${name}</td>
+                    <td>${r.achievement}</td>
+                    <td>${r.challenges || "-"}</td>
+                    <td style="color:${workloadColor}; font-weight:bold;">${r.workload}/5</td>
+                    <td>${r.period}</td>
+                    <td>${r.review_date}</td>
+                </tr>
+            `;
+      })
+      .join("");
+  }
+
+  async function addReview() {
+    const user_id = document.getElementById("perf-employee").value;
+    const score = parseFloat(document.getElementById("perf-score").value);
+    const period = document.getElementById("perf-period").value;
+    const date = document.getElementById("perf-date").value;
+    const notes = document.getElementById("perf-notes").value.trim() || null;
+
+    if (!score || !date) {
+      showMsg("perf-msg", "Please fill score and date.", "error");
+      return;
+    }
+    if (score < 1 || score > 10) {
+      showMsg("perf-msg", "Score must be between 1 and 10.", "error");
+      return;
+    }
+
+    const { ok, data: res } = await api("POST", "/performance/review", {
+      user_id: parseInt(user_id),
+      score,
+      period,
+      review_date: date,
+      notes,
+    });
+    if (!ok) {
+      showMsg("perf-msg", res.detail || "Failed.", "error");
+      return;
+    }
+
+    showMsg("perf-msg", "✅ Review added successfully!", "success");
+    document.getElementById("perf-score").value = "";
+    document.getElementById("perf-notes").value = "";
+    loadPerformanceReviews();
+  }
+
+  // ── ATTRITION RISK ──
+
+  async function getAttrition() {
+    document.getElementById("attrition-loading").classList.remove("hidden");
+    document.getElementById("attrition-result").innerHTML = "";
+
+    const { ok, data } = await api("GET", "/insights/attrition");
+    document.getElementById("attrition-loading").classList.add("hidden");
+
+    if (!ok) {
+      alert("Failed to get attrition data.");
+      return;
+    }
+
+    // Render each employee as a card
+    const colors = {
+      LOW: "#008800",
+      MEDIUM: "#cc8800",
+      HIGH: "#cc0000",
+      UNKNOWN: "#666",
+    };
+    const bg = {
+      LOW: "#eeffee",
+      MEDIUM: "#fff8ee",
+      HIGH: "#ffeeee",
+      UNKNOWN: "#f5f5f5",
+    };
+    const icons = { LOW: "🟢", MEDIUM: "🟡", HIGH: "🔴", UNKNOWN: "⚪" };
+
+    document.getElementById("attrition-result").innerHTML = data
+      .map(
+        (emp) => `
+            <div style="
+                border: 1px solid ${colors[emp.attrition_risk.risk_level]};
+                background: ${bg[emp.attrition_risk.risk_level]};
+                padding: 10px;
+                margin-bottom: 8px;
+                border-radius: 2px;
+            ">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="font-size:12px;">
+                        ${icons[emp.attrition_risk.risk_level]} ${emp.employee}
+                    </strong>
+                    <span style="
+                        color: ${colors[emp.attrition_risk.risk_level]};
+                        font-weight: bold;
+                        border: 1px solid ${colors[emp.attrition_risk.risk_level]};
+                        padding: 2px 8px;
+                        font-size: 11px;
+                    ">
+                        ${emp.attrition_risk.risk_level} RISK
+                    </span>
+                </div>
+                <div style="margin-top:6px; font-size:11px;">
+                    <strong>Reason:</strong> ${emp.attrition_risk.reason}
+                </div>
+                <div style="margin-top:3px; font-size:11px;">
+                    <strong>Recommendation:</strong> ${emp.attrition_risk.recommendation}
+                </div>
+                <div style="margin-top:6px; font-size:10px; color:#666;">
+                    Attendance: ${emp.data.attendance.present} present / ${emp.data.attendance.absent} absent &nbsp;|&nbsp;
+                    Tasks: ${emp.data.tasks.completed}/${emp.data.tasks.total} completed &nbsp;|&nbsp;
+                    Avg Score: ${emp.data.avg_performance_score || "N/A"}
+                </div>
+            </div>
+        `,
+      )
+      .join("");
+  }
+
+  // ── ON PAGE LOAD ──
+  checkAuth(); // redirect to login if not logged in
+  document.getElementById("mgr-name").textContent =
+    localStorage.getItem("user_name") || "Manager";
+
+  // Set today's date as default in date fields
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("att-date").value = today;
+
+  // Load all data
+  loadTeam();
+  loadAttendance();
+  loadTasks();
+  loadPerformanceReviews();
+  loadSelfReviews();
+  // Set today as default for performance review date
+  document.getElementById('perf-date').value = today;
 </script>
 {% endblock %}

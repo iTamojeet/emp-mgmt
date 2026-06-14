@@ -125,3 +125,43 @@ class PerformanceResponse(BaseModel):
 # --- AI Insight ---
 class InsightRequest(BaseModel):
     period: PeriodEnum
+
+# --- Self Review ---
+class SelfReviewCreate(BaseModel):
+    achievement: str
+    challenges: Optional[str] = None
+    workload: int  # 1 to 5
+    period: PeriodEnum
+    review_date: date
+
+class SelfReviewResponse(BaseModel):
+    id: int
+    user_id: int
+    achievement: str
+    challenges: Optional[str]
+    workload: int
+    period: str
+    review_date: date
+
+    class Config:
+        from_attributes = True
+
+# --- Performance Review (manager gives to employee) ---
+class PerformanceCreateFull(BaseModel):
+    user_id: int
+    score: float  # 1 to 10
+    notes: Optional[str] = None
+    period: PeriodEnum
+    review_date: date
+
+class PerformanceResponseFull(BaseModel):
+    id: int
+    user_id: int
+    score: float
+    notes: Optional[str]
+    period: str
+    review_date: date
+    reviewed_by: int
+
+    class Config:
+        from_attributes = True

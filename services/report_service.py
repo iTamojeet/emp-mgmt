@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from models import User, Attendance, Task, Performance
 from datetime import date, timedelta
 
@@ -42,10 +43,10 @@ def get_team_report_data(manager: User, period: str, db: Session) -> dict:
         }
 
     # Task summary
+    # Instead of filtering by created_at date range
+    # Just get ALL tasks for the team and let Gemini see the full picture
     tasks = db.query(Task).filter(
-        Task.assigned_to.in_(employee_ids),
-        Task.created_at >= start,
-        Task.created_at <= end
+    Task.assigned_to.in_(employee_ids)
     ).all()
 
     task_summary = {}

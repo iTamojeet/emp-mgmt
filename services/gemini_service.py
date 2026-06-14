@@ -7,7 +7,7 @@ load_dotenv()
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-3.1-flash-lite")
 
 
 def build_prompt(report_data: dict) -> str:
@@ -45,3 +45,33 @@ def get_gemini_insights(report_data: dict) -> str:
         return response.text
     except Exception as e:
         return f"Error generating insights: {str(e)}"
+    
+def get_attrition_risk(emp_data: dict) -> dict:
+    prompt = f"""
+You are an HR analytics assistant. Analyze this employee's data for the last 30 days and assess their attrition risk.
+
+Employee: {emp_data['name']}
+Attendance: {emp_data['attendance']['present']} present, {emp_data['attendance']['absent']} absent out of {emp_data['attendance']['total_days_recorded']} recorded days
+Tasks: {emp_data['tasks']['completed']} completed out of {emp_data['tasks']['total']} assigned
+Average Performance Score: {emp_data['avg_performance_score'] or 'No reviews yet'}
+
+Respond ONLY in this exact JSON format, nothing else:
+{{
+    "risk_level": "LOW" or "MEDIUM" or "HIGH",
+    "reason": "one sentence explanation",
+    "recommendation": "one sentence action for the manager"
+}}
+"""
+    try:
+        response = model.generate_content(prompt)
+        import json
+        # Clean response and parse JSON
+        text = response.text.strip()
+        text = text.replace("```json", "").replace("```", "").strip()
+        return json.loads(text)
+    except Exception as e:
+        return {
+            "risk_level": "UNKNOWN",
+            "reason": f"Could not assess: {str(e)}",
+            "recommendation": "Review manually"
+        }

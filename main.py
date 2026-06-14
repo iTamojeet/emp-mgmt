@@ -5,7 +5,7 @@ from fastapi.openapi.utils import get_openapi
 from database import engine, Base
 
 # Import all routers
-from routers import auth, employees, departments, attendance, tasks, ai_insights, pages
+from routers import auth, employees, departments, attendance, tasks, ai_insights, pages, performance
 
 # Create all DB tables on startup if they don't exist
 Base.metadata.create_all(bind=engine)
@@ -26,6 +26,7 @@ app.include_router(departments.router)
 app.include_router(attendance.router)
 app.include_router(tasks.router)
 app.include_router(ai_insights.router)
+app.include_router(performance.router)
 app.include_router(pages.router)  # ← serves HTML pages
 
 # Redirect root to login page

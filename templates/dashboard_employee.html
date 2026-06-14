@@ -1,274 +1,492 @@
-{% extends "base.html" %}
-{% block title %}Employee Dashboard{% endblock %}
+{% extends "base.html" %} {% block title %}Employee Dashboard{% endblock %} {%
+block content %}
+<div class="window" style="width: 750px; max-width: 98vw">
+  <!-- Title Bar -->
+  <div class="title-bar">
+    <div class="title-bar-text">
+      🏢 Employee Management System - Employee Dashboard
+    </div>
+  </div>
 
-{% block content %}
-<div class="window" style="width: 750px; max-width: 98vw;">
-
-    <!-- Title Bar -->
-    <div class="title-bar">
-        <div class="title-bar-text">
-            🏢 Employee Management System - Employee Dashboard
-        </div>
+  <div class="window-content">
+    <!-- Top bar: welcome + logout -->
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      "
+    >
+      <div>
+        <span style="font-weight: bold; font-size: 13px"
+          >Welcome, <span id="emp-name">Employee</span></span
+        >
+        <span style="color: #666; margin-left: 8px">| Employee Portal</span>
+      </div>
+      <button class="xp-btn xp-btn-danger" onclick="logout()">
+        🚪 Log Out
+      </button>
     </div>
 
-    <div class="window-content">
+    <!-- Tabs -->
+    <div
+      style="
+        display: flex;
+        gap: 2px;
+        margin-bottom: -1px;
+        position: relative;
+        z-index: 1;
+      "
+    >
+      <button class="tab-btn active" onclick="showTab('tab-profile')">
+        👤 My Profile
+      </button>
+      <button class="tab-btn" onclick="showTab('tab-tasks')">
+        📋 My Tasks
+      </button>
+      <button class="tab-btn" onclick="showTab('tab-attendance')">
+        📅 My Attendance
+      </button>
+      <button class="tab-btn" onclick="showTab('tab-performance')">⭐ My Performance</button>
+    </div>
 
-        <!-- Top bar: welcome + logout -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div>
-                <span style="font-weight:bold; font-size:13px;">Welcome, <span id="emp-name">Employee</span></span>
-                <span style="color:#666; margin-left:8px;">| Employee Portal</span>
-            </div>
-            <button class="xp-btn xp-btn-danger" onclick="logout()">🚪 Log Out</button>
+    <!-- Tab content wrapper -->
+    <div class="xp-panel" style="margin-bottom: 0; min-height: 300px">
+      <!-- ── TAB 1: MY PROFILE ── -->
+      <div id="tab-profile" class="tab-content">
+        <div class="xp-section-title">👤 My Profile</div>
+
+        <div class="xp-panel" id="profile-box">
+          <div>Loading profile...</div>
+        </div>
+      </div>
+
+      <!-- ── TAB 2: MY TASKS ── -->
+      <div id="tab-tasks" class="tab-content hidden">
+        <div class="xp-section-title">📋 My Tasks</div>
+
+        <div class="xp-alert xp-alert-info" style="margin-bottom: 10px">
+          💡 Click <strong>Mark Complete</strong> or
+          <strong>In Progress</strong> to update your task status.
         </div>
 
-        <!-- Tabs -->
-        <div style="display:flex; gap:2px; margin-bottom:-1px; position:relative; z-index:1;">
-            <button class="tab-btn active" onclick="showTab('tab-profile')">👤 My Profile</button>
-            <button class="tab-btn" onclick="showTab('tab-tasks')">📋 My Tasks</button>
-            <button class="tab-btn" onclick="showTab('tab-attendance')">📅 My Attendance</button>
+        <table class="xp-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Due Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="task-tbody">
+            <tr>
+              <td colspan="5">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── TAB 3: MY ATTENDANCE ── -->
+      <div id="tab-attendance" class="tab-content hidden">
+        <div class="xp-section-title">📅 My Attendance Record</div>
+
+        <!-- Summary box -->
+        <div
+          style="display: flex; gap: 8px; margin-bottom: 12px"
+          id="att-summary"
+        >
+          <div class="xp-panel" style="flex: 1; text-align: center">
+            <div style="font-size: 20px; color: #008800" id="count-present">
+              -
+            </div>
+            <div>Present</div>
+          </div>
+          <div class="xp-panel" style="flex: 1; text-align: center">
+            <div style="font-size: 20px; color: #cc0000" id="count-absent">
+              -
+            </div>
+            <div>Absent</div>
+          </div>
+          <div class="xp-panel" style="flex: 1; text-align: center">
+            <div style="font-size: 20px; color: #cc8800" id="count-half">-</div>
+            <div>Half Day</div>
+          </div>
+          <div class="xp-panel" style="flex: 1; text-align: center">
+            <div style="font-size: 20px; color: #0055cc" id="count-leave">
+              -
+            </div>
+            <div>Leave</div>
+          </div>
         </div>
 
-        <!-- Tab content wrapper -->
-        <div class="xp-panel" style="margin-bottom:0; min-height:300px;">
+        <table class="xp-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="att-tbody">
+            <tr>
+              <td colspan="2">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- ── TAB 4: MY PERFORMANCE ── -->
+            <div id="tab-performance" class="tab-content hidden">
+                <div class="xp-section-title">⭐ My Performance</div>
 
-            <!-- ── TAB 1: MY PROFILE ── -->
-            <div id="tab-profile" class="tab-content">
-                <div class="xp-section-title">👤 My Profile</div>
-
-                <div class="xp-panel" id="profile-box">
-                    <div>Loading profile...</div>
+                <!-- Submit Self Review -->
+                <div style="margin-bottom:12px; padding:8px; background:#f5f4f0; border:1px solid #aca899;">
+                    <div style="font-weight:bold; margin-bottom:6px;">📝 Submit Self Review</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                        <div>
+                            <label class="xp-label">Period:</label>
+                            <select class="xp-select" id="sr-period">
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="quarterly">Quarterly</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="xp-label">Review Date:</label>
+                            <input class="xp-input" id="sr-date" type="date" />
+                        </div>
+                    </div>
+                    <div style="margin-top:6px;">
+                        <label class="xp-label">What did you achieve this period?</label>
+                        <textarea class="xp-input" id="sr-achievement" rows="3"
+                            placeholder="Describe your achievements..." style="resize:vertical;"></textarea>
+                    </div>
+                    <div style="margin-top:6px;">
+                        <label class="xp-label">What challenges did you face?</label>
+                        <textarea class="xp-input" id="sr-challenges" rows="2"
+                            placeholder="Describe any challenges..." style="resize:vertical;"></textarea>
+                    </div>
+                    <div style="margin-top:6px;">
+                        <label class="xp-label">Workload Rating (1=Light, 5=Overwhelming):</label>
+                        <select class="xp-select" id="sr-workload" style="width:auto;">
+                            <option value="1">1 - Very Light</option>
+                            <option value="2">2 - Light</option>
+                            <option value="3" selected>3 - Balanced</option>
+                            <option value="4">4 - Heavy</option>
+                            <option value="5">5 - Overwhelming</option>
+                        </select>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <button class="xp-btn xp-btn-primary" onclick="submitSelfReview()">📤 Submit Review</button>
+                    </div>
+                    <div class="xp-alert hidden" id="sr-msg" style="margin-top:6px;"></div>
                 </div>
-            </div>
 
-            <!-- ── TAB 2: MY TASKS ── -->
-            <div id="tab-tasks" class="tab-content hidden">
-                <div class="xp-section-title">📋 My Tasks</div>
+                <!-- Manager Reviews received -->
+                <div class="xp-section-title">📊 Reviews From Manager</div>
+                <table class="xp-table" style="margin-bottom:16px;">
+                    <thead>
+                        <tr><th>Score</th><th>Period</th><th>Date</th><th>Notes</th></tr>
+                    </thead>
+                    <tbody id="mgr-review-tbody">
+                        <tr><td colspan="4">Loading...</td></tr>
+                    </tbody>
+                </table>
 
-                <div class="xp-alert xp-alert-info" style="margin-bottom:10px;">
-                    💡 Click <strong>Mark Complete</strong> or <strong>In Progress</strong> to update your task status.
-                </div>
-
+                <!-- My self reviews -->
+                <div class="xp-section-title">📝 My Past Self Reviews</div>
                 <table class="xp-table">
                     <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Status</th>
-                            <th>Due Date</th>
-                            <th>Action</th>
-                        </tr>
+                        <tr><th>Period</th><th>Date</th><th>Achievement</th><th>Challenges</th><th>Workload</th></tr>
                     </thead>
-                    <tbody id="task-tbody">
+                    <tbody id="my-sr-tbody">
                         <tr><td colspan="5">Loading...</td></tr>
                     </tbody>
                 </table>
             </div>
-
-            <!-- ── TAB 3: MY ATTENDANCE ── -->
-            <div id="tab-attendance" class="tab-content hidden">
-                <div class="xp-section-title">📅 My Attendance Record</div>
-
-                <!-- Summary box -->
-                <div style="display:flex; gap:8px; margin-bottom:12px;" id="att-summary">
-                    <div class="xp-panel" style="flex:1; text-align:center;">
-                        <div style="font-size:20px; color:#008800;" id="count-present">-</div>
-                        <div>Present</div>
-                    </div>
-                    <div class="xp-panel" style="flex:1; text-align:center;">
-                        <div style="font-size:20px; color:#cc0000;" id="count-absent">-</div>
-                        <div>Absent</div>
-                    </div>
-                    <div class="xp-panel" style="flex:1; text-align:center;">
-                        <div style="font-size:20px; color:#cc8800;" id="count-half">-</div>
-                        <div>Half Day</div>
-                    </div>
-                    <div class="xp-panel" style="flex:1; text-align:center;">
-                        <div style="font-size:20px; color:#0055cc;" id="count-leave">-</div>
-                        <div>Leave</div>
-                    </div>
-                </div>
-
-                <table class="xp-table">
-                    <thead>
-                        <tr><th>Date</th><th>Status</th></tr>
-                    </thead>
-                    <tbody id="att-tbody">
-                        <tr><td colspan="2">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </div><!-- end tab wrapper -->
-    </div><!-- end window-content -->
+    </div>
+    <!-- end tab wrapper -->
+  </div>
+  <!-- end window-content -->
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <style>
-    .tab-btn {
-        background: linear-gradient(180deg, #e8e4d8, #d4d0c4);
-        border: 1px solid #aca899;
-        border-bottom: none;
-        padding: 4px 12px;
-        font-family: 'Tahoma', sans-serif;
-        font-size: 11px;
-        cursor: pointer;
-        border-radius: 3px 3px 0 0;
-    }
-    .tab-btn.active {
-        background: #ffffff;
-        border-color: #aca899;
-        border-bottom: 1px solid #ffffff;
-        font-weight: bold;
-        position: relative;
-        top: 1px;
-    }
-    .tab-btn:hover:not(.active) { background: #ddeeff; }
+  .tab-btn {
+    background: linear-gradient(180deg, #e8e4d8, #d4d0c4);
+    border: 1px solid #aca899;
+    border-bottom: none;
+    padding: 4px 12px;
+    font-family: "Tahoma", sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 3px 3px 0 0;
+  }
+  .tab-btn.active {
+    background: #ffffff;
+    border-color: #aca899;
+    border-bottom: 1px solid #ffffff;
+    font-weight: bold;
+    position: relative;
+    top: 1px;
+  }
+  .tab-btn:hover:not(.active) {
+    background: #ddeeff;
+  }
 </style>
 
 <script>
-    // ── HELPERS ──
+  // ── HELPERS ──
 
-    function getToken() { return localStorage.getItem('token'); }
+  function getToken() {
+    return localStorage.getItem("token");
+  }
 
-    function checkAuth() {
-        if (!getToken()) window.location.href = '/login';
+  function checkAuth() {
+    if (!getToken()) window.location.href = "/login";
+  }
+
+  // Authenticated API call
+  async function api(method, url, body = null) {
+    const opts = {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken(),
+      },
+    };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(url, opts);
+    return { ok: res.ok, data: await res.json() };
+  }
+
+  // Show/hide tabs
+  function showTab(tabId) {
+    document
+      .querySelectorAll(".tab-content")
+      .forEach((t) => t.classList.add("hidden"));
+    document
+      .querySelectorAll(".tab-btn")
+      .forEach((b) => b.classList.remove("active"));
+    document.getElementById(tabId).classList.remove("hidden");
+    event.target.classList.add("active");
+  }
+
+  // Logout
+  function logout() {
+    localStorage.clear();
+    window.location.href = "/login";
+  }
+
+  // ── PROFILE ──
+
+  async function loadProfile() {
+    const { ok, data } = await api("GET", "/auth/me");
+    if (!ok) return;
+
+    document.getElementById("profile-box").innerHTML = `
+        <table class="xp-table" style="max-width:500px;">
+            <tr><th>Field</th><th>Value</th></tr>
+            <tr><td>👤 Name</td><td>${data.name}</td></tr>
+            <tr><td>📧 Email</td><td>${data.email}</td></tr>
+            <tr><td>🎭 Role</td><td>${data.role}</td></tr>
+            <tr><td>🏢 Department ID</td><td>${data.department_id || "N/A"}</td></tr>
+            <tr><td>👔 Reports To</td><td>${data.manager_name || "N/A"}</td></tr>
+            <tr><td>📧 Manager Email</td><td>${data.manager_email || "N/A"}</td></tr>
+        </table>
+    `;
+  }
+
+  // ── TASKS ──
+
+  async function loadTasks() {
+    const { ok, data } = await api("GET", "/tasks/me");
+    if (!ok) return;
+
+    const tbody = document.getElementById("task-tbody");
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5">No tasks assigned yet.</td></tr>';
+      return;
     }
 
-    // Authenticated API call
-    async function api(method, url, body = null) {
-        const opts = {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + getToken()
-            }
-        };
-        if (body) opts.body = JSON.stringify(body);
-        const res = await fetch(url, opts);
-        return { ok: res.ok, data: await res.json() };
-    }
-
-    // Show/hide tabs
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.remove('hidden');
-        event.target.classList.add('active');
-    }
-
-    // Logout
-    function logout() {
-        localStorage.clear();
-        window.location.href = '/login';
-    }
-
-    // ── PROFILE ──
-
-    async function loadProfile() {
-        const { ok, data } = await api('GET', '/auth/me');
-        if (!ok) return;
-
-        document.getElementById('profile-box').innerHTML = `
-            <table class="xp-table" style="max-width:400px;">
-                <tr><th>Field</th><th>Value</th></tr>
-                <tr><td>👤 Name</td><td>${data.name}</td></tr>
-                <tr><td>📧 Email</td><td>${data.email || 'N/A'}</td></tr>
-                <tr><td>🎭 Role</td><td>${data.role}</td></tr>
-                <tr><td>🏢 Department ID</td><td>${data.department_id || 'N/A'}</td></tr>
-            </table>
-        `;
-    }
-
-    // ── TASKS ──
-
-    async function loadTasks() {
-        const { ok, data } = await api('GET', '/tasks/me');
-        if (!ok) return;
-
-        const tbody = document.getElementById('task-tbody');
-        if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5">No tasks assigned yet.</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = data.map(t => `
+    tbody.innerHTML = data
+      .map(
+        (t) => `
             <tr>
                 <td>${t.title}</td>
-                <td>${t.description || '-'}</td>
+                <td>${t.description || "-"}</td>
                 <td>
                     <span style="
                         padding:2px 6px;
-                        background:${t.status === 'completed' ? '#ccffcc' : t.status === 'in_progress' ? '#fff4cc' : '#ffeecc'};
+                        background:${t.status === "completed" ? "#ccffcc" : t.status === "in_progress" ? "#fff4cc" : "#ffeecc"};
                         border:1px solid #aca899;
                     ">${t.status}</span>
                 </td>
-                <td>${t.due_date || '-'}</td>
+                <td>${t.due_date || "-"}</td>
                 <td style="display:flex; gap:4px;">
                     <button class="xp-btn" onclick="updateTask(${t.id}, 'in_progress')"
-                        ${t.status === 'in_progress' ? 'disabled' : ''}>
+                        ${t.status === "in_progress" || t.status === "completed" ? "disabled" : ""}>
                         🔄 In Progress
                     </button>
                     <button class="xp-btn xp-btn-primary" onclick="updateTask(${t.id}, 'completed')"
-                        ${t.status === 'completed' ? 'disabled' : ''}>
+                        ${t.status === "completed" ? "disabled" : ""}>
                         ✅ Complete
                     </button>
                 </td>
             </tr>
-        `).join('');
+        `,
+      )
+      .join("");
+  }
+
+  async function updateTask(taskId, status) {
+    const { ok, data } = await api("PUT", `/tasks/${taskId}`, { status });
+    if (!ok) {
+      alert(data.detail || "Failed to update.");
+      return;
+    }
+    loadTasks(); // refresh
+  }
+
+  // ── ATTENDANCE ──
+
+  async function loadAttendance() {
+    const { ok, data } = await api("GET", "/attendance/me");
+    if (!ok) return;
+
+    // Count each status for summary
+    const counts = { present: 0, absent: 0, half_day: 0, leave: 0 };
+    data.forEach((a) => {
+      if (counts[a.status] !== undefined) counts[a.status]++;
+    });
+
+    document.getElementById("count-present").textContent = counts.present;
+    document.getElementById("count-absent").textContent = counts.absent;
+    document.getElementById("count-half").textContent = counts.half_day;
+    document.getElementById("count-leave").textContent = counts.leave;
+
+    const tbody = document.getElementById("att-tbody");
+    if (data.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="2">No attendance records yet.</td></tr>';
+      return;
     }
 
-    async function updateTask(taskId, status) {
-        const { ok, data } = await api('PUT', `/tasks/${taskId}`, { status });
-        if (!ok) { alert(data.detail || 'Failed to update.'); return; }
-        loadTasks(); // refresh
-    }
+    // Sort by date descending (newest first)
+    data.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // ── ATTENDANCE ──
-
-    async function loadAttendance() {
-        const { ok, data } = await api('GET', '/attendance/me');
-        if (!ok) return;
-
-        // Count each status for summary
-        const counts = { present: 0, absent: 0, half_day: 0, leave: 0 };
-        data.forEach(a => { if (counts[a.status] !== undefined) counts[a.status]++; });
-
-        document.getElementById('count-present').textContent = counts.present;
-        document.getElementById('count-absent').textContent  = counts.absent;
-        document.getElementById('count-half').textContent    = counts.half_day;
-        document.getElementById('count-leave').textContent   = counts.leave;
-
-        const tbody = document.getElementById('att-tbody');
-        if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="2">No attendance records yet.</td></tr>';
-            return;
-        }
-
-        // Sort by date descending (newest first)
-        data.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        tbody.innerHTML = data.map(a => `
+    tbody.innerHTML = data
+      .map(
+        (a) => `
             <tr>
                 <td>${a.date}</td>
                 <td style="color:${
-                    a.status === 'present'  ? '#008800' :
-                    a.status === 'absent'   ? '#cc0000' :
-                    a.status === 'half_day' ? '#cc8800' : '#0055cc'
+                  a.status === "present"
+                    ? "#008800"
+                    : a.status === "absent"
+                      ? "#cc0000"
+                      : a.status === "half_day"
+                        ? "#cc8800"
+                        : "#0055cc"
                 };">
-                    ${a.status.replace('_', ' ').toUpperCase()}
+                    ${a.status.replace("_", " ").toUpperCase()}
                 </td>
+            </tr>
+        `,
+      )
+      .join("");
+  }
+
+  // ── PERFORMANCE ──
+
+    async function loadMyReviews() {
+        const { ok, data } = await api('GET', '/performance/my-reviews');
+        if (!ok) return;
+
+        const tbody = document.getElementById('mgr-review-tbody');
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4">No reviews from manager yet.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.map(r => {
+            const color = r.score >= 7 ? '#008800' : r.score >= 5 ? '#cc8800' : '#cc0000';
+            return `
+                <tr>
+                    <td style="color:${color}; font-weight:bold;">${r.score}/10</td>
+                    <td>${r.period}</td>
+                    <td>${r.review_date}</td>
+                    <td>${r.notes || '-'}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    async function loadMySelfReviews() {
+        const { ok, data } = await api('GET', '/performance/my-self-reviews');
+        if (!ok) return;
+
+        const tbody = document.getElementById('my-sr-tbody');
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">No self reviews submitted yet.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.map(r => `
+            <tr>
+                <td>${r.period}</td>
+                <td>${r.review_date}</td>
+                <td>${r.achievement}</td>
+                <td>${r.challenges || '-'}</td>
+                <td>${r.workload}/5</td>
             </tr>
         `).join('');
     }
 
-    // ── ON PAGE LOAD ──
-    checkAuth();
-    document.getElementById('emp-name').textContent = localStorage.getItem('user_name') || 'Employee';
+    async function submitSelfReview() {
+        const achievement = document.getElementById('sr-achievement').value.trim();
+        const challenges  = document.getElementById('sr-challenges').value.trim() || null;
+        const workload    = parseInt(document.getElementById('sr-workload').value);
+        const period      = document.getElementById('sr-period').value;
+        const review_date = document.getElementById('sr-date').value;
 
-    loadProfile();
-    loadTasks();
-    loadAttendance();
+        if (!achievement) {
+            showMsg('sr-msg', 'Please describe your achievements.', 'error'); return;
+        }
+        if (!review_date) {
+            showMsg('sr-msg', 'Please select a review date.', 'error'); return;
+        }
+
+        const { ok, data } = await api('POST', '/performance/self-review', {
+            achievement, challenges, workload, period, review_date
+        });
+
+        if (!ok) { showMsg('sr-msg', data.detail || 'Failed.', 'error'); return; }
+
+        showMsg('sr-msg', '✅ Self review submitted!', 'success');
+        document.getElementById('sr-achievement').value = '';
+        document.getElementById('sr-challenges').value = '';
+        loadMySelfReviews();
+    }
+
+    // Helper to show messages in employee dashboard
+    function showMsg(id, msg, type = 'info') {
+        const el = document.getElementById(id);
+        el.className = 'xp-alert xp-alert-' + type;
+        el.textContent = msg;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 4000);
+    }
+
+  // ── ON PAGE LOAD ──
+  checkAuth();
+  document.getElementById("emp-name").textContent =
+    localStorage.getItem("user_name") || "Employee";
+
+  loadProfile();
+  loadTasks();
+  loadAttendance();
+  loadMyReviews();
+  loadMySelfReviews();
 </script>
 {% endblock %}
