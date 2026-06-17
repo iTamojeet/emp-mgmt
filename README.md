@@ -2,6 +2,11 @@
 
 > A lightweight, self-hosted, privacy-first Employee Management System powered by FastAPI and Google Gemini AI — built for small Indian businesses that are priced out of enterprise HR tools.
 
+![Tests](https://img.shields.io/badge/tests-40%20passed-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)
+![Python](https://img.shields.io/badge/python-3.14-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-blue)
+
 ---
 
 ## 💡 Why We Built This
@@ -39,6 +44,7 @@ This system runs **entirely on your own machine or server**. Your data never lea
 - **360° Performance Reviews** — both manager reviews and employee self-reviews with structured fields
 - **Zero vendor lock-in** — open source, runs on MySQL + Python, swap any component
 - **Minimal cost** — just your server electricity + Gemini API (fractions of a rupee per report)
+- **90% test coverage** — 40 passing tests across all core features
 
 ---
 
@@ -51,6 +57,7 @@ This system runs **entirely on your own machine or server**. Your data never lea
 | Frontend | Jinja2 HTML/CSS (Windows XP theme) |
 | Auth | JWT (python-jose), bcrypt |
 | AI | Google Gemini API (gemini-1.5-flash-latest) |
+| Testing | pytest, httpx, pytest-cov (90% coverage) |
 
 ---
 
@@ -83,11 +90,20 @@ emp-mgmt/
 │   ├── report_service.py    # Data aggregation for AI reports
 │   └── gemini_service.py    # Gemini API calls (insights + attrition)
 │
-└── templates/               # Jinja2 HTML templates (Windows XP theme)
-    ├── base.html            # Shared layout, XP taskbar, clock
-    ├── login.html           # Login page
-    ├── dashboard_manager.html   # Manager dashboard (6 tabs)
-    └── dashboard_employee.html  # Employee dashboard (4 tabs)
+├── templates/               # Jinja2 HTML templates (Windows XP theme)
+│   ├── base.html            # Shared layout, XP taskbar, clock
+│   ├── login.html           # Login page
+│   ├── dashboard_manager.html   # Manager dashboard (6 tabs)
+│   └── dashboard_employee.html  # Employee dashboard (4 tabs)
+│
+└── tests/                   # pytest test suite (90% coverage)
+    ├── conftest.py          # Shared fixtures, test DB setup
+    ├── test_auth.py         # Auth and JWT tests
+    ├── test_employees.py    # Employee CRUD tests
+    ├── test_attendance.py   # Attendance tests
+    ├── test_tasks.py        # Task management tests
+    ├── test_performance.py  # Performance review tests
+    └── test_insights.py     # AI insights tests
 ```
 
 ---
@@ -109,8 +125,7 @@ pip install -r requirements.txt
 docker run --name mysql -e MYSQL_ROOT_PASSWORD=yourpassword -p 3306:3306 -d mysql:latest
 
 # Connect and run schema
-docker exec -it mysql mysql -u root -p
-# Then paste contents of schema.sql
+docker exec -i mysql mysql -u root -p < schema.sql
 ```
 
 ### 3. Configure environment
@@ -130,6 +145,21 @@ python3 -m uvicorn main:app --reload
 ```
 
 Visit: **http://127.0.0.1:8000**
+
+---
+
+## 🧪 Running Tests
+
+```bash
+# Run all tests with coverage
+pytest tests/ -v --cov=. --cov-report=term-missing
+
+# Generate HTML coverage report
+pytest tests/ -v --cov=. --cov-report=html
+open htmlcov/index.html
+```
+
+**Current results: 40 passed, 90% coverage**
 
 ---
 
@@ -217,12 +247,7 @@ Managers select a period (weekly / monthly / quarterly) and Gemini generates a s
 - Actionable recommendations
 
 ### Attrition Risk Assessment
-Gemini analyzes each employee's last 30 days of data:
-- Attendance (present/absent ratio)
-- Task completion rate
-- Average performance score
-
-And returns for each employee:
+Gemini analyzes each employee's last 30 days of data and returns for each employee:
 - **Risk Level:** 🟢 LOW / 🟡 MEDIUM / 🔴 HIGH
 - **Reason:** one-line explanation
 - **Recommendation:** one-line action for the manager

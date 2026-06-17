@@ -57,6 +57,7 @@ def seed_users():
     db.add(dept)
     db.commit()
     db.refresh(dept)
+    dept_id = dept.id  # ← store before closing
 
     # Create manager
     manager = User(
@@ -64,14 +65,15 @@ def seed_users():
         email="manager@test.com",
         hashed_password=hash_password("password123"),
         role="manager",
-        department_id=dept.id
+        department_id=dept_id
     )
     db.add(manager)
     db.commit()
     db.refresh(manager)
+    manager_id = manager.id  # ← store before closing
 
     # Link manager to department
-    dept.manager_id = manager.id
+    dept.manager_id = manager_id
     db.commit()
 
     # Create employee
@@ -80,21 +82,22 @@ def seed_users():
         email="employee@test.com",
         hashed_password=hash_password("password123"),
         role="employee",
-        department_id=dept.id
+        department_id=dept_id
     )
     db.add(employee)
     db.commit()
     db.refresh(employee)
+    employee_id = employee.id  # ← store before closing
 
-    db.close()
+    db.close()  # now safe to close
 
     return {
-        "manager_email":    "manager@test.com",
-        "employee_email":   "employee@test.com",
-        "password":         "password123",
-        "department_id":    dept.id,
-        "manager_id":       manager.id,
-        "employee_id":      employee.id
+        "manager_email":  "manager@test.com",
+        "employee_email": "employee@test.com",
+        "password":       "password123",
+        "department_id":  dept_id,    # ← plain int, not ORM object
+        "manager_id":     manager_id,
+        "employee_id":    employee_id
     }
 
 
