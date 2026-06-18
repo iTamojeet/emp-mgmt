@@ -9,6 +9,8 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+htmlcov/
+.coverage
 
 # Mac junk
 .DS_Store
