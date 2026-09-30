@@ -61,6 +61,50 @@ This system runs **entirely on your own machine or server**. Your data never lea
 
 ---
 
+## CI/CD (GitHub Actions)
+ 
+Workflow: `.github/workflows/tests.yml`, triggered on every push and pull request.
+ 
+**Test job** — runs on a matrix of:
+- OS: ubuntu-latest, windows-latest, macos-latest
+- Python: 3.11, 3.12, 3.13, 3.14
+(12 environments total) Steps: checkout → set up Python → install deps → `python -m pytest`.
+ 
+**Deploy job** — `needs: test`, so it only runs after all 12 test jobs pass. Currently just a placeholder (`echo "Starting Deployment...."`).
+ 
+```yaml
+name: Python Tests
+ 
+on:
+  push:
+  pull_request:
+ 
+jobs:
+  test:
+    name: Test on ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - run: python -m pytest
+ 
+  deploy:
+    name: Deploy
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Starting Deployment...."
+```
+
 ## 📁 Project Structure
 
 ```
